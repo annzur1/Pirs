@@ -1,0 +1,2 @@
+# Concept of the project
+Our objective is to, create an educational game. The player will be thrown into a two dimension city full of buildings, treasures, strengers and enemies. He has to solve many puzzles and sneak between the enemies in order to collect 5 treasures in the same colour. The last but not least player's issue will be his inventory, because limited number of slots in it, won't let the player do whatever he wants. 
