@@ -16,7 +16,7 @@ class Player:
     def update(self):
         self.pos = self.pos + (self.direction * self.speed)
     def draw_player(self):
-        pygame.draw.circle(screen, (self.color), (int(self.pos.x), int(self.pos.y)), cell_size//2)
+        pygame.draw.circle(screen, (self.color), (int(self.pos.x), int(self.pos.y)), cell_size//3)
     def move(self, direction):
         self.direction = direction
 
@@ -80,9 +80,11 @@ class Stranger:
     
 
 
-cell_size = 12
-cell_number = 50
-screen = pygame.display.set_mode((cell_number*cell_size, cell_number*cell_size))
+width = 616
+height = 660
+cell_size = width//28
+cell_number = height//30
+screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 
 
@@ -141,7 +143,12 @@ while True:
         enemy3.color = (pygame.Color("blue"))
     if ((abs(player.pos.x - stranger.pos.x) < cell_size) and (abs(player.pos.y - stranger.pos.y) < cell_size)):
         player.color = (pygame.Color("yellow"))
-    
+    #### RYSUJE SIATKĘ W TLE (testowo)####
+    for x in range(width//cell_number):
+        pygame.draw.line(screen, (0,0,90), (x*cell_number, 0),
+                                 (x*cell_number, height))
+    for x in range(height//cell_size):
+        pygame.draw.line(screen, (0,0,90), (0, x*cell_size),(width, x*cell_size))    
     pygame.display.update()
     pygame.display.set_caption("PIRS")
     clock.tick(60)
