@@ -7,11 +7,11 @@ pygame.init()
 #### KLASA GRACZA ####
 class Player:
     def __init__ (self):
-        self.pos = Vector2(1,1)
+        self.pos = Vector2(2,5)
         self.speed = 2
         self.direction = Vector2(1,0)
         self.stored_direction=None
-        self.color = (pygame.Color("white"))
+        self.color = (pygame.Color("grey"))
         self.pix_pos = self.get_pix_pos()
         self.can_move = True
     def update(self):
@@ -21,11 +21,11 @@ class Player:
             if self.stored_direction != None:
                 self.direction = self.stored_direction
     def draw_player(self):
-        pygame.draw.circle(screen, (self.color), (int(self.pix_pos.x), int(self.pix_pos.y)), cell_size//3)
+        pygame.draw.rect(screen, (self.color), (int(self.pix_pos.x), int(self.pix_pos.y), 15, 15))
     def move(self, direction):
         self.stored_direction = direction
     def get_pix_pos(self):
-        return Vector2((self.pos.x * cell_size)//2 + cell_number//2, (self.pos.y * cell_number)//2 + cell_number//2)
+        return Vector2((self.pos[0] * cell_size)//2 + cell_number//2, (self.pos[1] * cell_number)//2 + cell_number//2)
     def time_of_move(self):
         if int(self.pix_pos.x//2) % cell_size == 0:
             if self.direction == Vector2(1, 0) or self.direction ==  Vector2(-1, 0) or self.direction ==  Vector2(0, 0):
@@ -33,6 +33,8 @@ class Player:
         if int(self.pix_pos.y//2) % cell_number == 0:
             if self.direction ==  Vector2(0, 1) or self.direction ==  Vector2(0, -1) or self.direction == Vector2(0, 0):
                 return True
+        return False
+
 
 #### KLASA PRZECIWNIKA ####
 class Enemy:
@@ -99,10 +101,8 @@ cell_size = width//28
 cell_number = height//30
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
-walls = []
-
-
-
+background = pygame.image.load("miasto.png")
+background = pygame.transform.scale(background, (width, height))
 
 player = Player()
 enemy1 = Enemy()
@@ -135,8 +135,10 @@ while True:
     enemy3.randmove(movecounter)
     stranger.randmove(movecounter)
     movecounter += 1
+    walls = []
 
-    screen.fill((0,0,0))
+    screen.fill((255,255,255))
+    screen.blit(background, (0,0))
     player.draw_player()
     player.update()
     enemy1.draw_enemy()
@@ -166,3 +168,4 @@ while True:
     pygame.display.update()
     pygame.display.set_caption("PIRS")
     clock.tick(60)
+
