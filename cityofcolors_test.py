@@ -8,7 +8,7 @@ pygame.init()
 #### KLASA GRACZA ####
 class Player:
     def __init__ (self):
-        self.pos = Vector2(0.5,0.5)
+        self.pos = Vector2(1,5)
         self.speed = 2
         self.direction = Vector2(1,0)
         self.stored_direction=None
@@ -21,8 +21,10 @@ class Player:
         if self.time_of_move():
             if self.stored_direction != None:
                 self.direction = self.stored_direction
+        self.pos[0]=(self.pix_pos[0]+cell_size//2)//cell_size
+        self.pos[1]=(self.pix_pos[1]+cell_number//2)//cell_number
     def draw_player(self):
-        pygame.draw.circle(screen, (self.color), (int(self.pix_pos.x), int(self.pix_pos.y)), cell_size//3)
+        pygame.draw.rect(screen, (self.color), (int(self.pix_pos.x), int(self.pix_pos.y), 10, 10))
     def move(self, direction):
         self.stored_direction = direction
     def get_pix_pos(self):
@@ -34,6 +36,9 @@ class Player:
         if int(self.pix_pos.y//2) % cell_number == 0:
             if self.direction ==  Vector2(0, 1) or self.direction ==  Vector2(0, -1) or self.direction == Vector2(0, 0):
                 return True
+    def collision(self):
+        if Vector2(self.pos + self.direction) in buildings:
+            print(self.pos)
 
 #### KLASA PRZECIWNIKA ####
 class Enemy:
@@ -91,7 +96,6 @@ class Stranger:
             self.move(Vector2(0, 1 * cell_size))
 
 
-
 ### ZDEFINIOWANIE ISTOTNYCH WARTOŚCI ###
 
 width = 616
@@ -99,13 +103,20 @@ height = 660
 cell_size = width//28
 cell_number = height//30
 screen = pygame.display.set_mode((width, height))
+background = pygame.image.load("miasto.png")
+background = pygame.transform.scale(background, (width, height))
 clock = pygame.time.Clock()
-walls = []
+buildings = []
+with open("grid.txt") as file:
+    for yidx, line in enumerate(file):
+        for xidx, char in enumerate(line):
+            if char == '1':
+                buildings.append([xidx, yidx])
 run = True
 menu = True
 credits = False
-menuimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/menu2.jpg')
-creditsimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/credits.jpg')
+menuimage = pygame.image.load('menu2.jpg')
+creditsimage = pygame.image.load('credits.jpg')
 imagerect = menuimage.get_rect()
 ### TWORZENIE BYTÓW ###
 
@@ -122,10 +133,10 @@ movecounter = 0
 while run:
     if menu == True:
         if credits == True:
-            screen.fill("white")
+            screen.fill((255,255,255))
             screen.blit(creditsimage, imagerect)
         else:
-            screen.fill("white")
+            screen.fill((255,255,255))
             screen.blit(menuimage, imagerect)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -168,8 +179,10 @@ while run:
         movecounter += 1
 
         screen.fill((0,0,0)) ###rysowanie
+        screen.blit(background, (0,0))
         player.draw_player()
         player.update()
+        player.collision()
         enemy1.draw_enemy()
         enemy1.update()
         enemy2.draw_enemy()
@@ -179,21 +192,21 @@ while run:
         stranger.draw_stranger()
         stranger.update()
 
+
         #### INTERAKCJE POMIĘDZY GRACZEM A BYTAMI (testowo)####
-        if ((abs(player.pos.x - enemy1.pos.x) < cell_size) and (abs(player.pos.y - enemy1.pos.y) < cell_size)):
+        if ((abs(player.pix_pos.x - enemy1.pos.x) < cell_size) and (abs(player.pix_pos.y - enemy1.pos.y) < cell_size)):
             enemy1.color = (pygame.Color("blue"))
-        if ((abs(player.pos.x - enemy2.pos.x) < cell_size) and (abs(player.pos.y - enemy2.pos.y) < cell_size)):
+        if ((abs(player.pix_pos.x - enemy2.pos.x) < cell_size) and (abs(player.pix_pos.y - enemy2.pos.y) < cell_size)):
             enemy2.color = (pygame.Color("blue"))
-        if ((abs(player.pos.x - enemy1.pos.x) < cell_size) and (abs(player.pos.y - enemy3.pos.y) < cell_size)):
+        if ((abs(player.pix_pos.x - enemy1.pos.x) < cell_size) and (abs(player.pix_pos.y - enemy3.pos.y) < cell_size)):
             enemy3.color = (pygame.Color("blue"))
-        if ((abs(player.pos.x - stranger.pos.x) < cell_size) and (abs(player.pos.y - stranger.pos.y) < cell_size)):
+        if ((abs(player.pix_pos.x - stranger.pos.x) < cell_size) and (abs(player.pix_pos.y - stranger.pos.y) < cell_size)):
             player.color = (pygame.Color("yellow"))
         #### RYSUJE SIATKĘ W TLE (testowo)####
-        for x in range((width//cell_number)*2):
-            pygame.draw.line(screen, (0,0,90), (x*cell_number/2, 0), (x*cell_number/2, height))
-        for x in range((height//cell_size)*2):
-            pygame.draw.line(screen, (0,0,90), (0, x*cell_size/2),(width, x*cell_size/2))
-
+        for x in range((width//cell_number)):
+            pygame.draw.line(screen, (0,0,90), (x*cell_number, 0), (x*cell_number, height))
+        for x in range((height//cell_size)):
+            pygame.draw.line(screen, (0,0,90), (0, x*cell_size),(width, x*cell_size))
     pygame.display.update()
     pygame.display.set_caption("PIRS")
     clock.tick(60)
