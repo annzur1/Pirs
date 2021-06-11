@@ -94,6 +94,8 @@ class Stranger:
             self.move(Vector2(0, -1 * cell_size))
         else:
             self.move(Vector2(0, 1 * cell_size))
+### KLASA ELEMENT EKWIPUNKU ###
+#jeszcze nie zaczęta
 
 
 ### ZDEFINIOWANIE ISTOTNYCH WARTOŚCI ###
@@ -103,21 +105,39 @@ height = 660
 cell_size = width//28
 cell_number = height//30
 screen = pygame.display.set_mode((width, height))
-background = pygame.image.load("miasto.png")
+background = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/miasto.png')
 background = pygame.transform.scale(background, (width, height))
 clock = pygame.time.Clock()
 buildings = []
-with open("grid.txt") as file:
+with open('C:/Users/robal/Desktop/programowanie/img/grid.txt') as file:
     for yidx, line in enumerate(file):
         for xidx, char in enumerate(line):
             if char == '1':
                 buildings.append([xidx, yidx])
+
+### ZMIENNE POTRZEBNE DO DZIAŁANIA MENU I OBRAZKI ###                
 run = True
 menu = True
+ingame = False
 credits = False
-menuimage = pygame.image.load('menu2.jpg')
-creditsimage = pygame.image.load('credits.jpg')
+controls = False
+menuimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/menu2.jpg')
+creditsimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/credits.jpg')
+ingameimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/menuingame.jpg')
+controlsimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/controls.jpg')
 imagerect = menuimage.get_rect()
+
+### EKWIPUNEK ###
+inventorysurface = pygame.Surface((width, 2*cell_size))
+inventorysurface2 = pygame.Surface((16*cell_size, cell_size))
+inventorysurface.fill('black')
+inventorysurface2.fill('white')
+inventoryrect = inventorysurface.get_rect(topleft = (0, height))
+inventoryrect2 = inventorysurface.get_rect(topleft = (6*cell_size, height + cell_size/2))
+inventory = []
+for i in range (8):
+    inventory.append(0)
+print(inventory)
 ### TWORZENIE BYTÓW ###
 
 player = Player()
@@ -131,35 +151,62 @@ movecounter = 0
 ### GŁÓWNA CZĘŚĆ ###
 
 while run:
-    if menu == True:
-        if credits == True:
+    if menu == True: ####menu główne
+        
+        if credits == True: ####poszczególne plansze menu
             screen.fill((255,255,255))
             screen.blit(creditsimage, imagerect)
+        elif ingame == True:
+            screen.fill((255,255,255))
+            screen.blit(ingameimage, imagerect)
+        elif controls == True:
+            screen.fill((255,255,255))
+            screen.blit(controlsimage, imagerect)
         else:
             screen.fill((255,255,255))
             screen.blit(menuimage, imagerect)
-        for event in pygame.event.get():
+        
+        for event in pygame.event.get(): ####wywoływanie plansz
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_2:
                         menu = False
+            
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_3:
                         pygame.quit()
                         sys.exit()
+            
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_4:
-                        if credits == False:
-                            credits = True
-                        else:
-                            credits = False
+                        if controls == True:
+                            if (controls == True) and (ingame == False):
+                                controls = False
+                            else:
+                                controls = True
+                        else:    
+                            if (credits == False) and (ingame == False):
+                                credits = True
+                            elif (credits == True) and (ingame == False):
+                                credits = False
+            
+            if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_5:
+                        if (controls == False) and (ingame == False):
+                            controls = True
+                        elif (controls == True) and (ingame == False):
+                            controls = False
+
     else:
-        for event in pygame.event.get():
+        screen = pygame.display.set_mode((width, height + cell_size*2)) ####dorysowanie paska ekwipunku
+        for event in pygame.event.get(): ####wyjście z gry krzyżykiem
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.KEYDOWN:     ####poruszanie graczem
                 if event.key == pygame.K_LEFT:
                     player.move(Vector2(-1, 0))
@@ -171,6 +218,13 @@ while run:
                     player.move(Vector2(0, 1))
                 if event.key == pygame.K_1:
                     player.move(Vector2(0, 0))
+
+                if event.key == pygame.K_2: ####pauza i wyjście przyciskiem
+                    menu = True
+                    ingame = True
+                if event.key == pygame.K_3:
+                    pygame.quit()
+                    sys.exit()
 
         enemy1.randmove(movecounter) ####ruch bytów
         enemy2.randmove(movecounter)
@@ -191,7 +245,8 @@ while run:
         enemy3.update()
         stranger.draw_stranger()
         stranger.update()
-
+        screen.blit(inventorysurface, (inventoryrect))
+        screen.blit(inventorysurface2, (inventoryrect2))
 
         #### INTERAKCJE POMIĘDZY GRACZEM A BYTAMI (testowo)####
         if ((abs(player.pix_pos.x - enemy1.pos.x) < cell_size) and (abs(player.pix_pos.y - enemy1.pos.y) < cell_size)):
@@ -202,11 +257,13 @@ while run:
             enemy3.color = (pygame.Color("blue"))
         if ((abs(player.pix_pos.x - stranger.pos.x) < cell_size) and (abs(player.pix_pos.y - stranger.pos.y) < cell_size)):
             player.color = (pygame.Color("yellow"))
+
         #### RYSUJE SIATKĘ W TLE (testowo)####
         for x in range((width//cell_number)):
             pygame.draw.line(screen, (0,0,90), (x*cell_number, 0), (x*cell_number, height))
         for x in range((height//cell_size)):
             pygame.draw.line(screen, (0,0,90), (0, x*cell_size),(width, x*cell_size))
+
     pygame.display.update()
     pygame.display.set_caption("PIRS")
     clock.tick(60)
