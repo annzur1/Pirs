@@ -181,6 +181,42 @@ while run:
         enemy3.update()
         stranger.draw_stranger()
         stranger.update()
+        
+                if enemy1.pos.x >= width: ### przeciwnik1 nie wychodzi poza mape###
+            enemy1.speed *= -1
+        if enemy1.pos.x <= 0:
+            enemy1.speed *= -1
+        if enemy1.pos.y <= 0:
+            enemy1.speed *= -1
+        if enemy1.pos.y >= height:
+            enemy1.speed *= -1
+            
+        if enemy2.pos.x >= width: ### przeciwnik2 nie wychodzi poza mape###
+            enemy2.speed *= -1
+        if enemy2.pos.x <= 0:
+            enemy2.speed *= -1
+        if enemy2.pos.y <= 0:
+            enemy2.speed *= -1
+        if enemy2.pos.y >= height:
+            enemy2.speed *= -1
+
+        if enemy3.pos.x >= width: ### przeciwnik3 nie wychodzi poza mape###
+            enemy3.speed *= -1
+        if enemy3.pos.x <= 0:
+            enemy3.speed *= -1
+        if enemy3.pos.y <= 0:
+            enemy3.speed *= -1
+        if enemy3.pos.y >= height:
+            enemy3.speed *= -1
+
+        if stranger.pos.x >= width: ### neutralny nie wychodzi poza mape###
+            stranger.speed *= -1
+        if stranger.pos.x <= 0:
+            stranger.speed *= -1
+        if stranger.pos.y <= 0:
+            stranger.speed *= -1
+        if stranger.pos.y >= height:
+            stranger.speed *= -1
 
         #### INTERAKCJE POMIĘDZY GRACZEM A BYTAMI (testowo)####
         if ((abs(player.pix_pos.x - enemy1.pos.x) < cell_size) and (abs(player.pix_pos.y - enemy1.pos.y) < cell_size)):
