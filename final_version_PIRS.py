@@ -9,7 +9,7 @@ pygame.init()
 class Player:
     def __init__ (self):
         self.pos = Vector2(1,5)
-        self.speed = 1
+        self.speed = 2
         self.direction = Vector2(1,0)
         self.stored_direction=None
         self.color = (pygame.Color("white"))
@@ -22,8 +22,8 @@ class Player:
         if self.time_of_move():
             if self.stored_direction != None:
                 self.direction = self.stored_direction
-        self.pos[0]=(self.pix_pos[0]+cell_size//2)//cell_size
-        self.pos[1]=(self.pix_pos[1]+cell_number//2)//cell_number
+        # self.pos[0]=(self.pix_pos[0]+cell_size//2)//cell_size
+        # self.pos[1]=(self.pix_pos[1]+cell_number//2)//cell_number
     def draw_player(self):
         pygame.draw.rect(screen, (self.color), (int(self.pix_pos.x), int(self.pix_pos.y), 10, 10))
     def move(self, direction):
@@ -37,9 +37,9 @@ class Player:
         if int(self.pix_pos.y//2) % cell_number == 0:
             if self.direction ==  Vector2(0, 1) or self.direction ==  Vector2(0, -1) or self.direction == Vector2(0, 0):
                 return True
-    def collision(self):
-        if Vector2(self.pos + self.direction) in buildings:
-            print(self.pos)
+    # def collision(self):
+    #     if Vector2(self.pos + self.direction) in buildings:
+    #         print(self.pos)
     def encounter(self):
         self.speed = 0
     def heal(self):
@@ -109,7 +109,7 @@ class Stranger:
             self.move(Vector2(0, -1 * cell_size))
         else:
             self.move(Vector2(0, 1 * cell_size))
-    
+
 ### KLASA ZNAJDŹKI ###
 class Treasure():
     def __init__ (self):
@@ -143,26 +143,36 @@ class Treasure():
         return self.color1
     def resetcolor(self):
         self.color1 = random.randint(1,4)
-    
 
-
+class Ending:
+    def write_text(self, my_text, screen, pos, size, colour, my_font):
+        font = pygame.font.SysFont(my_font, size)
+        text = font.render(my_text, False, colour)
+        text_size = text.get_size()
+        screen.blit(text, pos)
+    def win(self):
+        screen.fill((0,0,0))
+        self.write_text("WYGRAŁEŚ",screen,(70,100),100,(211,27,232),"arial")
+        self.write_text("TWÓJ WYNIK:{}".format(self.player.score),self.screen,(190,250),35,(211,27,232),"arial")
+        self.write_text("Aby zagrać jeszcze raz naciśnij SPACJĘ",self.screen,(90,400),30,(211,27,232),"arial")
+        self.write_text("Aby zakończyć grę naciśnij klawisz ESCAPE",self.screen,(70,500),30,(211,27,232),"arial")
 ### ZDEFINIOWANIE ISTOTNYCH WARTOŚCI ###
-
 width = 616
 height = 660
 cell_size = width//28
 cell_number = height//30
 screen = pygame.display.set_mode((width, height))
-background = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/miasto.png')
+background = pygame.image.load('miasto.png')
 background = pygame.transform.scale(background, (width, height))
 clock = pygame.time.Clock()
-buildings = []
-with open('C:/Users/robal/Desktop/programowanie/img/grid.txt') as file:
-    for yidx, line in enumerate(file):
-        for xidx, char in enumerate(line):
-            if char == '1':
-                buildings.append([xidx, yidx])
-### ZMIENNE POTRZEBNE DO DZIAŁANIA MENU I OBRAZKI ###                
+# buildings = []
+# with open('grid.txt') as file:
+#     for yidx, line in enumerate(file):
+#         for xidx, char in enumerate(line):
+#             if char == '1':
+#                 buildings.append([xidx, yidx])
+
+### ZMIENNE POTRZEBNE DO DZIAŁANIA MENU I OBRAZKI ###
 run = True
 menu = True
 ingame = False
@@ -171,56 +181,57 @@ controls = False
 puzzle = False
 puzzle1 = False
 done = False
-menuimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/menu2.jpg')
-creditsimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/credits.jpg')
-ingameimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/menuingame.jpg')
-controlsimage = pygame.image.load('C:/Users/robal/Desktop/programowanie/img/controls.jpg')
+menuimage = pygame.image.load('menu2.jpg')
+creditsimage = pygame.image.load('credits.jpg')
+ingameimage = pygame.image.load('menuingame.jpg')
+controlsimage = pygame.image.load('controls.jpg')
 imagerect = menuimage.get_rect()
 
 ### EKWIPUNEK ###
 inventorysurface = pygame.Surface((width, 2*cell_size))
 inventorysurface2 = pygame.Surface((16*cell_size, cell_size))
-inventorysurface.fill('black')
-inventorysurface2.fill('white')
+inventorysurface.fill((0,0,0))
+inventorysurface2.fill((255,255,255))
 inventoryrect = inventorysurface.get_rect(topleft = (0, height))
 inventoryrect2 = inventorysurface.get_rect(topleft = (6*cell_size, height + cell_size/2))
 
 slotsurface0 = pygame.Surface((cell_size*2, cell_size))
-slotsurface0.fill('green')
+slotsurface0.fill(pygame.Color("green"))
 slotrect0 = slotsurface0.get_rect(topleft = (6*cell_size, height + cell_size/2))
 
 slotsurface1 = pygame.Surface((cell_size*2, cell_size))
-slotsurface1.fill('red')
+slotsurface1.fill(pygame.Color("red"))
 slotrect1 = slotsurface1.get_rect(topleft = (8*cell_size, height + cell_size/2))
 
 slotsurface2 = pygame.Surface((cell_size*2, cell_size))
-slotsurface2.fill('yellow')
+slotsurface2.fill(pygame.Color("yellow"))
 slotrect2 = slotsurface2.get_rect(topleft = (10*cell_size, height + cell_size/2))
 
 slotsurface3 = pygame.Surface((cell_size*2, cell_size))
-slotsurface3.fill('blue')
+slotsurface3.fill(pygame.Color("blue"))
 slotrect3 = slotsurface3.get_rect(topleft = (12*cell_size, height + cell_size/2))
 
 slotsurface4 = pygame.Surface((cell_size*2, cell_size))
-slotsurface4.fill('green')
+slotsurface4.fill(pygame.Color("green"))
 slotrect4 = slotsurface4.get_rect(topleft = (14*cell_size, height + cell_size/2))
 
 slotsurface5 = pygame.Surface((cell_size*2, cell_size))
-slotsurface5.fill('red')
+slotsurface5.fill(pygame.Color("red"))
 slotrect5 = slotsurface5.get_rect(topleft = (16*cell_size, height + cell_size/2))
 
 slotsurface6 = pygame.Surface((cell_size*2, cell_size))
-slotsurface6.fill('yellow')
+slotsurface6.fill(pygame.Color("yellow"))
 slotrect6 = slotsurface6.get_rect(topleft = (18*cell_size, height + cell_size/2))
 
 slotsurface7 = pygame.Surface((cell_size*2, cell_size))
-slotsurface7.fill('blue')
+slotsurface7.fill(pygame.Color("blue"))
 slotrect7 = slotsurface7.get_rect(topleft = (20*cell_size, height + cell_size/2))
 
 inventorybase = [slotsurface0, slotsurface1, slotsurface2, slotsurface3, slotsurface4, slotsurface5, slotsurface6, slotsurface7]
 inventory = []
 for i in range (8):
     inventory.append(0)
+
 ### TWORZENIE BYTÓW ###
 
 player = Player()
@@ -231,6 +242,7 @@ stranger = Stranger()
 treasure1 = Treasure()
 treasure2 = Treasure()
 treasure3 = Treasure()
+ending = Ending()
 movecounter = 0
 
 
@@ -238,7 +250,7 @@ movecounter = 0
 
 while run:
     if menu == True: ####menu główne + pauza i zagadki
-        
+
         if credits == True: ####poszczególne plansze menu
             screen.fill((255,255,255))
             screen.blit(creditsimage, imagerect)
@@ -251,27 +263,22 @@ while run:
         else:
             screen.fill((255,255,255))
             screen.blit(menuimage, imagerect)
-        
-        
-            
-        
 
 
-        
         for event in pygame.event.get(): ####wywoływanie plansz
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-                
+
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_2:
                         menu = False
-                
+
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_3:
                         pygame.quit()
                         sys.exit()
-                
+
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_4:
                         if controls == True:
@@ -279,12 +286,12 @@ while run:
                                 controls = False
                             else:
                                 controls = True
-                        else:    
+                        else:
                             if (credits == False) and (ingame == False):
                                 credits = True
                             elif (credits == True) and (ingame == False):
                                 credits = False
-                
+
             if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_5:
                         if (controls == False) and (ingame == False):
@@ -334,22 +341,22 @@ while run:
 
         screen.fill((0,0,0)) ###rysowanie
         screen.blit(background, (0,0))
-        
+
         player.draw_player()
         player.heal()
         player.update()
-        player.collision()
-        
+        # player.collision()
+
         enemy1.draw_enemy()
         enemy1.update()
         enemy2.draw_enemy()
         enemy2.update()
         enemy3.draw_enemy()
         enemy3.update()
-        
+
         stranger.draw_stranger()
         stranger.update()
-        
+
         treasure1.draw_treasure()
         treasure2.draw_treasure()
         treasure3.draw_treasure()
@@ -364,19 +371,19 @@ while run:
         screen.blit(slotsurface5, (slotrect5))
         screen.blit(slotsurface6, (slotrect6))
         screen.blit(slotsurface7, (slotrect7))
-        
+
         for i in range (8):
             if inventory[i] == 1:
-                inventorybase[i].fill('orange')
+                inventorybase[i].fill(pygame.Color("orange"))
             elif inventory[i] == 2:
-                inventorybase[i].fill('green')
+                inventorybase[i].fill(pygame.Color("green"))
             elif inventory[i] == 3:
-                inventorybase[i].fill('red')
+                inventorybase[i].fill(pygame.Color("red"))
             elif inventory[i] == 4:
-                inventorybase[i].fill('yellow')
+                inventorybase[i].fill(pygame.Color("yellow"))
             else:
-                inventorybase[i].fill('white')
-            
+                inventorybase[i].fill(pygame.Color("white"))
+
         if enemy1.pos.x >= width: ### przeciwnik1 nie wychodzi poza mape###
             enemy1.speed *= -1
         if enemy1.pos.x <= 0:
@@ -385,7 +392,7 @@ while run:
             enemy1.speed *= -1
         if enemy1.pos.y >= height:
             enemy1.speed *= -1
-            
+
         if enemy2.pos.x >= width: ### przeciwnik2 nie wychodzi poza mape###
             enemy2.speed *= -1
         if enemy2.pos.x <= 0:
@@ -436,7 +443,7 @@ while run:
                 treasure1.resetpos()
                 colorx = treasure1.givecolor()
                 treasure1.resetcolor()
-                
+
         if ((abs(player.pix_pos.x - treasure2.pos.x) < cell_size) and (abs(player.pix_pos.y - treasure2.pos.y) < cell_size)):
 
             if ((0 in inventory) and (movecounter % 30 == 0)):
@@ -495,14 +502,14 @@ while run:
             active = True
             text = str(number1) + ' * ' + str(number2) + ' = '
             lenght = 0
-            
+
 
             while not done:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         done = True
                         puzzle1 = False
-                    
+
                     if event.type == pygame.KEYDOWN:
                         if active:
                             if event.key == pygame.K_RETURN:
@@ -532,13 +539,13 @@ while run:
                                 text += event.unicode
                                 lenght += 1
 
-                
+
                 txt_surface = font.render(text, True, color)
                 screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
                 pygame.draw.rect(screen, color, input_box, 2)
                 pygame.display.flip()
 
-        
+
 
         if puzzle == True:
             puzzlesurface = pygame.Surface((300,300))
@@ -558,7 +565,7 @@ while run:
             active = True
             text = str(number1) + ' * ' + str(number2) + ' = '
             lenght = 0
-            
+
 
             while not done:
                 for event in pygame.event.get():
@@ -594,17 +601,17 @@ while run:
                                 text += event.unicode
                                 lenght += 1
 
-                
+
                 txt_surface = font.render(text, True, color)
                 screen.blit(txt_surface, (input_box.x+5, input_box.y+5))
                 pygame.draw.rect(screen, color, input_box, 2)
                 pygame.display.flip()
 
-        #### RYSUJE SIATKĘ W TLE (testowo)####
-        for x in range((width//cell_number)*2):
-            pygame.draw.line(screen, (0,0,90), (x*cell_number/2, 0), (x*cell_number/2, height))
-        for x in range((height//cell_size)*2):
-            pygame.draw.line(screen, (0,0,90), (0, x*cell_size/2),(width, x*cell_size/2))
+        # #### RYSUJE SIATKĘ W TLE (testowo)####
+        # for x in range((width//cell_number)*2):
+        #     pygame.draw.line(screen, (0,0,90), (x*cell_number/2, 0), (x*cell_number/2, height))
+        # for x in range((height//cell_size)*2):
+        #     pygame.draw.line(screen, (0,0,90), (0, x*cell_size/2),(width, x*cell_size/2))
 
     counter1 = 0
     counter2 = 0
@@ -613,28 +620,26 @@ while run:
     for i in range (8):
         if inventory[i] == 1:
             counter1 += 1
-        if inventory[i] == 2:
+        elif inventory[i] == 2:
             counter2 += 1
-        if inventory[i] == 3:
+        elif inventory[i] == 3:
             counter3 += 1
-        if inventory[i] == 4:
+        elif inventory[i] == 4:
             counter4 += 1
-    if counter1 > 4:
-        pygame.quit()
-        sys.exit()
-    if counter2 > 4:
-        pygame.quit()
-        sys.exit()
-    if counter3 > 4:
-        pygame.quit()
-        sys.exit()
-    if counter4 > 4:
-        pygame.quit()
-        sys.exit()
-            
+    if counter1 > 4 or counter2 > 4 or  counter3 > 4 or  counter4 > 4:
+        screen.fill((0,0,0))
+        text_font = pygame.font.SysFont('arial', 60)
+        win = text_font.render("Wygrałeś!", True, (252,186,3))
+        screen.blit(win, (200,250))
+    else:
+        if 0 not in inventory:
+            screen.fill((0,0,0))
+            text_font = pygame.font.SysFont('arial', 60)
+            win = text_font.render("Przegrałeś!", True, (252,186,3))
+            screen.blit(win, (200,250))
 
-            
-            
+
+
     pygame.display.update()
     pygame.display.set_caption("PIRS")
     clock.tick(60)
